@@ -5,7 +5,7 @@
 
 Name:           cepces
 Version:        0.3.5
-Release:        3%{?dist}
+Release:        5%{?dist}
 Summary:        Certificate Enrollment through CEP/CES
 
 License:        GPLv3+
@@ -17,8 +17,12 @@ Source0:        https://github.com/openSUSE/%{name}/archive/v%{version}/%{name}-
 # Merged to master after ver 0.3.5
 Patch0:         https://patch-diff.githubusercontent.com/raw/openSUSE/%{name}/pull/16.patch
 
-# Use /usr/libexec and /etc instead
-Patch1:         https://patch-diff.githubusercontent.com/raw/openSUSE/%{name}/pull/17.patch
+# Replace old requests_kerberos with requests_gssapi
+Patch1:         https://patch-diff.githubusercontent.com/raw/openSUSE/%{name}/pull/18.patch
+
+# Cleanup for installing the project
+Patch2:         https://patch-diff.githubusercontent.com/raw/openSUSE/%{name}/pull/19.patch
+
 BuildArch:      noarch
 
 Requires:       python%{python3_pkgversion}-%{name} == %{version}
@@ -40,12 +44,15 @@ Summary:        Python part of %{name}
 BuildRequires:  python3dist(setuptools)
 BuildRequires:  python3dist(cryptography) >= 1.2
 BuildRequires:  python3dist(requests)
-BuildRequires:  python3dist(requests-kerberos) >= 0.9
+BuildRequires:  python3dist(gssapi)
+BuildRequires:  python3dist(requests-gssapi)
 BuildRequires:  python3-devel
 
 Requires:       python3dist(setuptools)
 Requires:       python3dist(cryptography) >= 1.2
 Requires:       python3dist(requests)
+Requires:       python3dist(gssapi)
+Requires:       python3dist(requests-gssapi)
 
 %description -n python%{python3_pkgversion}-%{name}
 %{name} is an application for enrolling certificates through CEP and CES.
@@ -55,6 +62,7 @@ This package provides the Python part for CEP and CES interaction.
 Summary:        certmonger integration for %{name}
 
 Requires:       certmonger
+Requires:       python%{python3_pkgversion}-%{name}
 
 %description certmonger
 Installing %{name}-certmonger adds %{name} as a CA configuration.
@@ -161,7 +169,6 @@ ln -s tests/cepces_test .
 %{__python3} setup.py test
 
 %files
-%license LICENSE
 %doc README.rst
 %dir %{_sysconfdir}/%{name}/
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
@@ -171,6 +178,7 @@ ln -s tests/cepces_test .
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 
 %files -n python%{python3_pkgversion}-%{name}
+%license LICENSE
 %{python3_sitelib}/%{name}
 %{python3_sitelib}/%{name}-%{version}-py?.*.egg-info
 
@@ -178,9 +186,18 @@ ln -s tests/cepces_test .
 %{_libexecdir}/certmonger/%{name}-submit
 
 %files selinux -f selinux-files.txt
-%defattr(0644,root,root,0755)
 
 %changelog
+* Wed Jul 20 2022 Ding-Yi Chen <dchen@redhat.com> - 0.3.5-5
+- Add Pull request #19
+- Remove Pull request #17 as it is not accepted
+- Review comment #13, #14 addressed
+
+* Mon Jun 27 2022 Ding-Yi Chen <dchen@redhat.com> - 0.3.5-4
+- Add Pull request #18
+- Replaces kerberos with gssapi
+- Replaces requests_kerberos with requests_gssapi
+
 * Fri Jun 24 2022 Ding-Yi Chen <dchen@redhat.com> - 0.3.5-3
 - Review comment #4, #7 addressed
 
