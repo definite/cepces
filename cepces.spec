@@ -25,11 +25,11 @@ Patch2:         https://patch-diff.githubusercontent.com/raw/openSUSE/%{name}/pu
 
 BuildArch:      noarch
 
-Requires:       python%{python3_pkgversion}-%{name}%{?_isa} = %{version}
-Requires:       %{name}-certmonger%{?_isa} = %{version}
-Requires:       %{name}-selinux%{?_isa} = %{version}
+Requires:       python%{python3_pkgversion}-%{name}%{?_isa} = %{version}-%{release}
 
-Suggests:       logrotate
+Recommends:     logrotate
+Supplements:    %{name}-certmonger%{?_isa} = %{version}-%{release}
+Supplements:    %{name}-selinux%{?_isa} = %{version}-%{release}
 
 %description
 cepces is an application for enrolling certificates through CEP and CES.
@@ -61,8 +61,8 @@ This package provides the Python part for CEP and CES interaction.
 %package certmonger
 Summary:        certmonger integration for %{name}
 
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires:       certmonger
-Requires:       python%{python3_pkgversion}-%{name}%{?_isa}
 
 %description certmonger
 Installing %{name}-certmonger adds %{name} as a CA configuration.
@@ -73,6 +73,7 @@ Summary:        SELinux support for %{name}
 
 BuildRequires:  selinux-policy-devel
 
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires:       selinux-policy
 Requires(post): selinux-policy-targeted
 
@@ -190,6 +191,10 @@ ln -s tests/cepces_test .
 %changelog
 * Fri Jul 22 2022 Ding-Yi Chen <dchen@redhat.com> - 0.3.5-6
 - Review comment #16 addressed
+- It make more sense that -selinux and -certmonger depends on main package,
+  Not the other round
+- Recommends: logrotate
+- Supplements: -selinux, -certmonger
 
 * Wed Jul 20 2022 Ding-Yi Chen <dchen@redhat.com> - 0.3.5-5
 - Add Pull request #19
