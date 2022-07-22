@@ -5,7 +5,7 @@
 
 Name:           cepces
 Version:        0.3.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Certificate Enrollment through CEP/CES
 
 License:        GPLv3+
@@ -25,9 +25,9 @@ Patch2:         https://patch-diff.githubusercontent.com/raw/openSUSE/%{name}/pu
 
 BuildArch:      noarch
 
-Requires:       python%{python3_pkgversion}-%{name} == %{version}
-Requires:       %{name}-certmonger == %{version}
-Requires:       %{name}-selinux == %{version}
+Requires:       python%{python3_pkgversion}-%{name}%{?_isa} = %{version}
+Requires:       %{name}-certmonger%{?_isa} = %{version}
+Requires:       %{name}-selinux%{?_isa} = %{version}
 
 Suggests:       logrotate
 
@@ -62,7 +62,7 @@ This package provides the Python part for CEP and CES interaction.
 Summary:        certmonger integration for %{name}
 
 Requires:       certmonger
-Requires:       python%{python3_pkgversion}-%{name}
+Requires:       python%{python3_pkgversion}-%{name}%{?_isa}
 
 %description certmonger
 Installing %{name}-certmonger adds %{name} as a CA configuration.
@@ -87,7 +87,7 @@ SELinux support for %{name}
 
 # Build the SELinux module(s).
 for SELINUXVARIANT in %{selinux_variants}; do
-  make -C selinux clean all
+  make %{?_smp_mflags} -C selinux clean all
   mv -v selinux/%{name}.pp selinux/%{name}-${SELINUXVARIANT}.pp
 done
 
@@ -188,6 +188,9 @@ ln -s tests/cepces_test .
 %files selinux -f selinux-files.txt
 
 %changelog
+* Fri Jul 22 2022 Ding-Yi Chen <dchen@redhat.com> - 0.3.5-6
+- Review comment #16 addressed
+
 * Wed Jul 20 2022 Ding-Yi Chen <dchen@redhat.com> - 0.3.5-5
 - Add Pull request #19
 - Remove Pull request #17 as it is not accepted
