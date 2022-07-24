@@ -25,7 +25,7 @@ Patch2:         https://patch-diff.githubusercontent.com/raw/openSUSE/%{name}/pu
 
 BuildArch:      noarch
 
-Requires:       python%{python3_pkgversion}-%{name}%{?_isa} = %{version}-%{release}
+Requires:       python%{python3_pkgversion}-%{name} = %{version}-%{release}
 
 Recommends:     logrotate
 Supplements:    %{name}-certmonger%{?_isa} = %{version}-%{release}
@@ -61,7 +61,8 @@ This package provides the Python part for CEP and CES interaction.
 %package certmonger
 Summary:        certmonger integration for %{name}
 
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+
+Requires:       %{name} = %{version}-%{release}
 Requires:       certmonger
 
 %description certmonger
@@ -73,7 +74,7 @@ Summary:        SELinux support for %{name}
 
 BuildRequires:  selinux-policy-devel
 
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       selinux-policy
 Requires(post): selinux-policy-targeted
 
@@ -126,6 +127,11 @@ cat <<EOF>%{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 }
 EOF
 
+%check
+# Create a symlink so test can locate cepces_test
+ln -s tests/cepces_test .
+%{__python3} setup.py test
+
 %pre selinux
 for SELINUXVARIANT in %{selinux_variants}; do
   %selinux_relabel_pre -s %{SELINUXVARIANT}
@@ -164,11 +170,6 @@ if [[ "$1" == "0" ]]; then
   getcert remove-ca -c %{name} >/dev/null || :
 fi
 
-%check
-# Create a symlink so test can locate cepces_test
-ln -s tests/cepces_test .
-%{__python3} setup.py test
-
 %files
 %doc README.rst
 %dir %{_sysconfdir}/%{name}/
@@ -189,7 +190,7 @@ ln -s tests/cepces_test .
 %files selinux -f selinux-files.txt
 
 %changelog
-* Fri Jul 22 2022 Ding-Yi Chen <dchen@redhat.com> - 0.3.5-6
+* Sun Jul 24 2022 Ding-Yi Chen <dchen@redhat.com> - 0.3.5-6
 - Review comment #16 addressed
 - It make more sense that -selinux and -certmonger depends on main package,
   Not the other round
